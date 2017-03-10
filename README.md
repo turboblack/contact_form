@@ -6,6 +6,8 @@ In this plugin, three new editable area's are created. Infoooter1EditableArea, I
   
 The next code goes in the you're theme php file
 
+
+
 <?php
 	global $contact_form_email;
 	$contact_form_email = "test@test.com";
