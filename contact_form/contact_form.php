@@ -1,6 +1,12 @@
 <?php
 defined('INC_ROOT') || die('Direct access is not allowed.');
 
+wCMS::addListener('css', 'contactfCSS');
+
+function contactfCSS($args) {
+	array_push($args[0], '<link rel="stylesheet" href="'.wCMS::url("plugins/contact_form/css/style.css").'" type="text/css">');
+	return $args;
+}
 
 function contact_form() {
 	
