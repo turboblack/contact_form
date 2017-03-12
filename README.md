@@ -45,7 +45,7 @@ The next code goes in the you're theme php file
 		</div>
 	</footer>
 ```
-In you're stylesheet (style.css) of you're theme you should change margin-bottom to a value that can hold you're footer. In my case 400px.
+In you're stylesheet (style.css) of you're theme you should change the body margin-bottom to a value that can hold you're footer. In my case 400px, and add the @media body if the screen is smaller than 768px
 The .embedmap I use to embed a google map or an openstreet map.
 
 ```
@@ -54,6 +54,12 @@ body {
 	background: #eee;
 	margin-bottom: 400px;
 	font-family: Lucida Sans Unicode, Verdana;
+}
+
+@media (max-width: 768px) {
+	body {
+		margin-bottom: 675px;
+	}
 }
 
 .embedmap iframe {border: 1px solid #bac5d6 !important; width: 100%!important; height: 200px!important;}
