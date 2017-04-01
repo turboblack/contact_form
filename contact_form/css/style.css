@@ -5,6 +5,7 @@ div#containerform {
 	padding: 0px 0px 0px 0px;
 	background-color: transparent;
 	font: 10px Verdana, Arial, Helvetica, sans-serif;
+	color: #000;
 }
 
 div#errors {
@@ -64,5 +65,3 @@ div#errors {
 #containerform label.fout {
 	color: #FF0000;
 }
-
-p.message {color: #347ebd;}
