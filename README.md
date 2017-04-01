@@ -1,7 +1,9 @@
 # A contact form plugin for WonderCMS
 
-## 1. To use this form, download and extract the zip file, put the folder 'contact_form' in the plugins folder of your WonderCMS website. 
-  
+## 1. How to use/install
+ - download and extract the ZIP file
+ - put the unzipped folder 'contact_form' in the plugins folder of your WonderCMS website 
+ 
 ## 2. Put the code below in your theme.php, where you want to show the contact form.
 
 
