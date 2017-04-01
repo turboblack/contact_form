@@ -21,7 +21,8 @@
 ```
 
 
-## Showing the contact form only on a specfic page
+
+## Need to show the contact form only on a specfic page?
  - change 'the name of the page' in the code below and put in your theme.php
 
 ```
