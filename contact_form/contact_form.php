@@ -1,10 +1,15 @@
 <?php
-defined('INC_ROOT') || die('Direct access is not allowed.');
+if(defined('VERSION'))
+	define('version', VERSION);
+	defined('version') OR die('Direct access is not allowed.');
+
 
 wCMS::addListener('css', 'contactfCSS');
 
 function contactfCSS($args) {
-	array_push($args[0], '<link rel="stylesheet" href="'.wCMS::url("plugins/contact_form/css/style.css").'" type="text/css">');
+	$script = '<link rel="stylesheet" href="'.wCMS::url("plugins/contact_form/css/style.css").'" type="text/css">';
+
+	$args[0].=$script;
 	return $args;
 }
 
@@ -16,7 +21,10 @@ function contact_form() {
 					#  Website    : www.ferket.net             		#
 					#-----------------------------------------------#
 					#################################################
-					#  Edited and adapted by Herman Adema			#
+					#  Edited and adapted by Herman Adema		#
+					#################################################
+					#################################################
+					#  Edited by Robert Isoski for WonderCMS	#
 					#################################################
 			 		
 					global $contact_form_email;
@@ -28,9 +36,9 @@ function contact_form() {
 					error_reporting(E_ALL);
 
 
-					// Config Gedeelte
+					// Config
 					$cfg['url'] = "#contactform";		// Url to goto after you have submitted the form
-					$cfg['email'] = $emailadr;         // Webmaster E-mail
+					$cfg['email'] = $emailadr;         // Webmaster email
 					$cfg['text'] = TRUE;               // If an error occurs, make text red   ( TRUE is on, FALSE is off )
 					$cfg['input'] = TRUE;              // If an error occurs, make border red ( TRUE is on, FALSE is off )
 					$cfg['HTML'] = TRUE;               // Een HTML email ( TRUE is on, FALSE is off )
@@ -49,71 +57,61 @@ function contact_form() {
 					}
 
 					$formulier = TRUE;
-
-					    if(isset($_POST['wis']) && ($_SERVER['REQUEST_METHOD'] == "POST"))
-					    {
-					        foreach($_POST as $key => $value)
-					        {
-					            unset($value);
-					        }
-					    }
         
-					    if(isset($_POST['verzenden']) && ($_SERVER['REQUEST_METHOD'] == "POST"))
+					    if(isset($_POST['submitForm']) && ($_SERVER['REQUEST_METHOD'] == "POST"))
 					    {
 					        $aFout = array();
         
-					        $naam = trim($_POST['naam']);
+					        $name = trim($_POST['name']);
 					        $email = trim($_POST['email']);
-					        $onderwerp = trim($_POST['onderwerp']);
-					        $bericht = trim($_POST['bericht']);
+					        $subject = trim($_POST['subject']);
+					        $message = trim($_POST['message']);
         
 					        if($cfg['CAPTCHA'])
 					        {
 					            $code = $_POST['code'];
 					        }
                 
-					        if(empty($naam) || (strlen($naam) < 3) || preg_match("/([<>])/i", $naam) )
+					        if(empty($name) || (strlen($name) < 3) || preg_match("/([<>])/i", $name) )
 					        {
-					            $aFout[] = "Er is geen naam ingevuld.";
-					            unset($naam);
-					            $fout['text']['naam'] = TRUE;
-					            $fout['input']['naam'] = TRUE;
+					            $aFout[] = "Name field is empty.";
+					            unset($name);
+					            $fout['text']['name'] = TRUE;
+					            $fout['input']['name'] = TRUE;
 					        }
 					        if(empty($email))
 					        {
-					            $aFout[] = "Er is geen e-mail adres ingevuld.";
+					            $aFout[] = "Email field is empty.";
 					            unset($email);
 					            $fout['text']['email'] = TRUE;
 					            $fout['input']['email'] = TRUE;
 					        }
 					        elseif(checkmail($email) == 0)
-					        // Wanneer je PHP 5.2 > gebruikt
-					        //elseif(!filter_var($email, FILTER_VALIDATE_EMAIL)) 
 					        {
-					            $aFout[] = "Er is geen correct e-mail adres ingevuld.";
+					            $aFout[] = "Entered email address is not valid.";
 					            unset($email);
 					            $fout['text']['email'] = TRUE;
 					            $fout['input']['email'] = TRUE;
 					        }
-					        if(empty($onderwerp))
+					        if(empty($subject))
 					        {
-					            $aFout[] = "Er is geen onderwerp ingevuld.";
-					            unset($onderwerp);
-					            $fout['text']['onderwerp'] = TRUE;
-					            $fout['input']['onderwerp'] = TRUE;
+					            $aFout[] = "Subject is empty.";
+					            unset($subject);
+					            $fout['text']['subject'] = TRUE;
+					            $fout['input']['subject'] = TRUE;
 					        }
-					        if(empty($bericht))
+					        if(empty($message))
 					        {
-					            $aFout[] = "Er is geen bericht ingevuld.";
-					            unset($bericht);
-					            $fout['text']['bericht'] = TRUE;
-					            $fout['input']['bericht'] = TRUE;
+					            $aFout[] = "Message is empty.";
+					            unset($message);
+					            $fout['text']['message'] = TRUE;
+					            $fout['input']['message'] = TRUE;
 					        }
 					        if($cfg['CAPTCHA'])
 					        {
 					            if(strtoupper($code) != $_SESSION['captcha_code'])
 					            {
-					                $aFout[] = "Er is geen correcte code ingevuld.";
+					                $aFout[] = "Captcha is incorrect.";
 					                $fout['text']['code'] = TRUE;
 					                $fout['input']['code'] = TRUE;
 					            }
@@ -135,14 +133,14 @@ function contact_form() {
 					            {
 					                // Headers
 					                $headers = "From: ".$cfg['email']."\r\n"; 
-					                $headers .= "Reply-To: \"".$naam."\" <".$email.">\n";
+					                $headers .= "Reply-To: \"".$name."\" <".$email.">\n";
 					                $headers .= "Return-Path: Mail-Error <".$cfg['email'].">\n";
 					                $headers .= "MIME-Version: 1.0\n";
 					                $headers .= "Content-Transfer-Encoding: 8bit\n";
 					                $headers .= "Content-type: text/html; charset=iso-8859-1\n";
                 
                 
-					                $bericht = '
+					                $message = '
 					                <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 					                <html>
 					                <head>
@@ -150,41 +148,39 @@ function contact_form() {
 					            
 					                <body>
  					               <br />
-					                <b>Naam:</b> '.$naam.'<br />
+					                <b>Name:</b> '.$name.'<br />
 					                <b>Email:</b> '.$email.'<br />
 					                <br />
-					                <b>Bericht:</b><br />
-					                '.$bericht.'
+					                <b>Message:</b><br />
+					                '.$message.'
 					                <br />
 					                <br />
 					                <br />
 					                --------------------------------------------------------------------------<br />
-					                <b>Datum:</b> '.date("d-m-Y @ H:i:s").'<br />
 					                <b>IP:</b> '.$_SERVER['REMOTE_ADDR'].'<br />
 					                </body>
 					                </html>';
 					            }
 					            else 
 					            {
-					                $bericht_wrap = wordwrap ($bericht, 40, "\n", 1);
+					                $message_wrap = wordwrap ($message, 40, "\n", 1);
 					                // Headers
 					                $headers = "From: \"Contact Formulier\" <".$cfg['email'].">\n"; 
 					                $headers .= "MIME-Version: 1.0\n";
 					                $headers .= "Content-type: text/plain; charset='iso-8859-1'\n"; 
             
-					                // Bericht
-					                $message = "Naam: ".$naam."        \n";
-					                $message .= "E-mail: ".$email."     \n";
-					                $message .= "Bericht:\n".$bericht_wrap."     \n ";
+					                // message
+					                $message = "Name: ".$name."        \n";
+					                $message .= "Email: ".$email."     \n";
+					                $message .= "Message:\n".$message_wrap."     \n ";
 					                $message .= "               \n ";
-					                $message .= "Datum: ".date("d-m-Y H:i:s")." \n";
 					                $message .= "------------------------------------------------------- \n ";
 					                $message .= "IP: ".$_SERVER['REMOTE_ADDR']."                    \n ";
 					                $message .= "Host: ".gethostbyaddr($_SERVER['REMOTE_ADDR'])."                \n ";
 					            
 					            }
         
-					            if(mail($cfg['email'], "[Contactformulier] ".$onderwerp, $bericht, $headers)) 
+					            if(mail($cfg['email'], "[Contact from your website] ".$subject, $message, $headers)) 
 					            {
 					                $headers = "From: ".$cfg['email']."\r\n"; 
 					                $headers .= "Reply-To: \"".$cfg['email']."\" <".$cfg['email'].">\n";
@@ -193,10 +189,10 @@ function contact_form() {
 					                $headers .= "Content-Transfer-Encoding: 8bit\n";
 					                $headers .= "Content-type: text/html; charset=iso-8859-1\n";
                     
-					                mail($email, "[Contactformulier] ".$onderwerp, $bericht, $headers);
+					                mail($email, "[Contactformulier] ".$subject, $message, $headers);
                 
                 
-					                unset($naam, $email, $onderwerp, $bericht);
+					                unset($name, $email, $subject, $message);
         
 					                echo "
 					                <p class='message'>
@@ -206,7 +202,7 @@ function contact_form() {
 					            }
 					            else
 					            {
-					                echo "<p class='message'> An error occurred while sending the e-mail.</p>";
+					                echo "<p class='message'>An error occurred while sending the email.</p>";
 					            }
 					        }
 							echo '<META HTTP-EQUIV="refresh" content="0;URL=' . $cfg['url'] . '">';
@@ -220,102 +216,34 @@ function contact_form() {
 
 					        echo "<form method='post' action='" . $_SERVER['PHP_SELF']. "'>";
 					        echo "<p>";
-					        echo "<input type='text' placeholder='Name' id='naam' name='naam' maxlength='30'";
-                              if(isset($fout['input']['naam'])) { echo "class='fout'"; } echo "value='";
-                              if (!empty($naam)) { echo stripslashes($naam); } echo "' /><br />";
+					        echo "<input type='text' placeholder='Name' id='name' name='name' maxlength='30'";
+                              if(isset($fout['input']['name'])) { echo "class='fout'"; } echo "value='";
+                              if (!empty($name)) { echo stripslashes($name); } echo "' /><br />";
         
-					        echo "<input type='text' placeholder='E-Mail' id='email' name='email' maxlength='255'";
+					        echo "<input type='text' placeholder='Email' id='email' name='email' maxlength='255'";
                               if(isset($fout['input']['email'])) { echo "class='fout'"; } echo "value='";
                               if (!empty($email)) { echo stripslashes($email); } echo "' /><br />";
         
-					        echo "<input type='text' placeholder='Subject' id='onderwerp' name='onderwerp' maxlength='40'";
-                              if(isset($fout['input']['onderwerp'])) { echo "class='fout'"; } echo "value='";
-                              if (!empty($onderwerp)) { echo stripslashes($onderwerp); } echo "' /><br />";
+					        echo "<input type='text' placeholder='Subject' id='subject' name='subject' maxlength='40'";
+                              if(isset($fout['input']['subject'])) { echo "class='fout'"; } echo "value='";
+                              if (!empty($subject)) { echo stripslashes($subject); } echo "' /><br />";
         
-					        echo "<textarea placeholder='Message' id='bericht' name='bericht'";
-                              if(isset($fout['input']['bericht'])) { echo "class='fout'"; } echo " cols='31' rows='10'>";
-                              if (!empty($bericht)) { echo stripslashes($bericht); } echo "</textarea><br />";
+					        echo "<textarea placeholder='Message' id='message' name='message'";
+                              if(isset($fout['input']['message'])) { echo "class='fout'"; } echo " cols='31' rows='10'>";
+                              if (!empty($message)) { echo stripslashes($message); } echo "</textarea><br />";
 
 					        if($cfg['CAPTCHA'])
 					        {
 					        echo "<img src=\"" . wCMS::url('plugins/contact_form/captcha/captcha.php') . "\" alt='' /><br />";
         
-					        echo "<input type='text' placeholder='Code' id='code' name='code' maxlength='4' size='4'";
+					        echo "<input type='text' placeholder='Captcha' id='code' name='code' maxlength='4' size='4'";
                               if(isset($fout['input']['code'])) { echo "class='captcha fout'"; } echo " /><br />";
 					        }
         
-					        echo "<input type='submit' id='verzenden' name='verzenden' value='Submit' />";
-					        echo "<input type='submit' id='wis' name='wis' value='Reset' />";
+					        echo "<input type='submit' id='submitForm' name='submitForm' value='Submit' />";
 					        echo "</p>";
 						  echo "</form>";
 					    echo "</div>";
 			        
 					    }
-}
-
-function Infoooter1EditableArea() {
-    // Check if the anotherEditableArea area is already exists, if not, create it.
-    if (wCMS::getConfig('Infoooter1EditableArea') === false) {
-        wCMS::setConfig('Infoooter1EditableArea', '<h4>Another subside!</h4><p>This is an example of another editable subside area.</p>');
-    }
-
-    // Fetch the value of anotherEditableArea from the database.
-    $value = wCMS::getConfig('Infoooter1EditableArea');
-    // If value is empty, let's put something in it by default. (IMPORTANT)
-    if (empty($value)) {
-        $value = 'Empty content.';
-    }
-    // It's necessary to pass the editable method to the fetched value/content
-    // to make the area editable ONLY if admin is logged in.
-    if (wCMS::$loggedIn) {
-        // If logged in, it must be editable
-        return wCMS::editable('Infoooter1EditableArea', $value);
-    }
-    // If not logged in, don't make it editable!
-    return $value;
-}
-
-
-function Infoooter2EditableArea() {
-    // Check if the anotherEditableArea area is already exists, if not, create it.
-    if (wCMS::getConfig('Infoooter2EditableArea') === false) {
-        wCMS::setConfig('Infoooter2EditableArea', '<h4>Another subside!</h4><p>This is an example of another editable subside area.</p>');
-    }
-
-    // Fetch the value of anotherEditableArea from the database.
-    $value = wCMS::getConfig('Infoooter2EditableArea');
-    // If value is empty, let's put something in it by default. (IMPORTANT)
-    if (empty($value)) {
-        $value = 'Empty content.';
-    }
-    // It's necessary to pass the editable method to the fetched value/content
-    // to make the area editable ONLY if admin is logged in.
-    if (wCMS::$loggedIn) {
-        // If logged in, it must be editable
-        return wCMS::editable('Infoooter2EditableArea', $value);
-    }
-    // If not logged in, don't make it editable!
-    return $value;
-}
-
-function Infoooter3EditableArea() {
-    // Check if the anotherEditableArea area is already exists, if not, create it.
-    if (wCMS::getConfig('Infoooter3EditableArea') === false) {
-        wCMS::setConfig('Infoooter3EditableArea', '<h4>Another subside!</h4><p>This is an example of another editable subside area.</p>');
-    }
-
-    // Fetch the value of anotherEditableArea from the database.
-    $value = wCMS::getConfig('Infoooter3EditableArea');
-    // If value is empty, let's put something in it by default. (IMPORTANT)
-    if (empty($value)) {
-        $value = 'Empty content.';
-    }
-    // It's necessary to pass the editable method to the fetched value/content
-    // to make the area editable ONLY if admin is logged in.
-    if (wCMS::$loggedIn) {
-        // If logged in, it must be editable
-        return wCMS::editable('Infoooter3EditableArea', $value);
-    }
-    // If not logged in, don't make it editable!
-    return $value;
 }
