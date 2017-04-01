@@ -8,7 +8,7 @@
 ```
 	<?php
 		global $contact_form_email;
-		$contact_form_email = "kim.fajdiga@gmail.com";
+		$contact_form_email = "your.email@gmail.com";
 	?>
 
 	<div class="container marginTop20">
