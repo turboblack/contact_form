@@ -165,7 +165,7 @@ function contact_form() {
 					            {
 					                $message_wrap = wordwrap ($message, 40, "\n", 1);
 					                // Headers
-					                $headers = "From: \"Contact Formulier\" <".$cfg['email'].">\n"; 
+					                $headers = "From: \"Contact Form\" <".$cfg['email'].">\n"; 
 					                $headers .= "MIME-Version: 1.0\n";
 					                $headers .= "Content-type: text/plain; charset='iso-8859-1'\n"; 
             
@@ -189,7 +189,7 @@ function contact_form() {
 					                $headers .= "Content-Transfer-Encoding: 8bit\n";
 					                $headers .= "Content-type: text/html; charset=iso-8859-1\n";
                     
-					                mail($email, "[Contactformulier] ".$subject, $message, $headers);
+					                mail($email, "[Contact form website] ".$subject, $message, $headers);
                 
                 
 					                unset($name, $email, $subject, $message);
